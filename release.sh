@@ -39,6 +39,8 @@ for MICRO in $(seq 101 999); do
 
         bash update-action-references.sh "v${VERSION}"
 
+        git diff
+
         # commit the changes
         git commit \
             --amend \
