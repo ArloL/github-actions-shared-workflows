@@ -1,0 +1,13 @@
+name: hello
+
+inputs:
+  name:
+    required: true
+    type: string
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        echo "Hello ${{ inputs.name }}"
