@@ -9,6 +9,6 @@ jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
-    - uses: ArloL/github-actions-shared-workflows/.github/actions/hello@main
+    - uses: ArloL/github-actions-shared-workflows/.github/actions/hello@v2407.0.101
       with:
         name: ${{ inputs.name }}
