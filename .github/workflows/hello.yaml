@@ -1,0 +1,14 @@
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ArloL/github-actions-shared-workflows/.github/actions/hello@main
+        with:
+          name: ${{ inputs.name }}
