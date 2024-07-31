@@ -14,6 +14,9 @@ repository=${2:-${GITHUB_REPOSITORY:-ArloL/github-actions-shared-workflows}}
 # escape all forward slashes with a backslash
 repository=${repository//\//\\/}
 
+# use gsed on e.g. macos if it is available; fall back to sed
+hash gsed 2>/dev/null && SED='gsed' || SED='sed'
+
 # update the version of every "local" action reference with sed
 # in detail:
 # s     <- substitute command
@@ -31,8 +34,11 @@ repository=${repository//\//\\/}
 #   v${VERSION}     <- the new version
 # |     <- final delimiter character; finishes the replacement string
 # g     <- global flag to replace every occurence
-hash gsed 2>/dev/null && SED='gsed' || SED='sed'
-${SED} -i \
-    -E \
-    "s|(\s*uses: ${repository}[^@]+)@(.*)|\1@${reference}|g" \
-    .github/workflows/*.y*ml
+
+find .github/actions .github/workflows \
+    -type f \
+    \( -name "*.yml" -or -name "*.yaml" \) \
+    -exec "${SED}" -i \
+        -E \
+        "s|(\s*uses: ${repository}[^@]+)@(.*)|\1@${reference}|g" \
+        {} \;
