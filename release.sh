@@ -17,48 +17,60 @@ set -o errexit
 set -o nounset
 set -o xtrace
 
+# the year and month with two letters each; e.g. 2312 or 2407
 MAJOR_MINOR=$(date -u +"%y%m")
 
 # sync local tags with info from remote
 git fetch \
-    --prune \
-    --prune-tags \
-    --tags \
-    --force
+  --prune \
+  --prune-tags \
+  --tags \
+  --force
 
-# create an empty commit that will be amended later
+# the goal is to push a tagged commit that updates all @$version references.
+# since we don't know which tags were already created, we start counting up
+# and see which push is successful. that push needs to already have the
+# correct changes. so we create an empty commit that is amended again and
+# again until it is pushed successfully. then we're done.
+
 git commit \
-    --allow-empty \
-    --message "this commit will be amended later"
+  --allow-empty \
+  --message "this commit will be amended later"
 
+# count up starting at 101 until 999 allowing 898 releases per month
 for MICRO in $(seq 101 999); do
 
-    VERSION=${MAJOR_MINOR}.0.${MICRO}
+  # this is the version pattern
+  VERSION=${MAJOR_MINOR}.0.${MICRO}
 
-    if git tag "v${VERSION}"; then
+  # fails if the tag exists
+  if git tag "v${VERSION}"; then
 
-        bash update-action-references.sh "v${VERSION}"
+    bash update-action-references.sh "v${VERSION}"
 
-        git diff
+    # output the changes to the console
+    git diff
 
-        # commit the changes
-        git commit \
-            --amend \
-            --all \
-            --message "update references to v${VERSION}"
+    # amend the initial commit with the changes
+    git commit \
+      --amend \
+      --all \
+      --message "update references to v${VERSION}"
 
-        # update the tag reference to the latest commit before pushing
-        git tag \
-            --force \
-            "v${VERSION}"
+    # update the tag reference to the latest commit before pushing
+    git tag \
+      --force \
+      "v${VERSION}"
 
-        if git push origin "v${VERSION}"; then
-            break
-        fi
-
-        # remove the local tag if the push failed
-        git tag --delete "v${VERSION}"
-
+    # try pushing
+    if git push origin "v${VERSION}"; then
+      # if it worked, we're done
+      break
     fi
+
+    # remove the local tag if the push failed
+    git tag --delete "v${VERSION}"
+
+  fi
 
 done
