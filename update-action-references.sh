@@ -10,7 +10,7 @@ reference=${1:-${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git rev-parse --abbrev-re
 # escape all forward slashes with a backslash
 reference=${reference//\//\\/}
 
-repository=${2:-${GITHUB_REPOSITORY:-ArloL/github-actions-shared-workflows}}
+repository=${2:-${GITHUB_REPOSITORY:-ArloL/actions}}
 # escape all forward slashes with a backslash
 repository=${repository//\//\\/}
 
