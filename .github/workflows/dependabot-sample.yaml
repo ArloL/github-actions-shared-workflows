@@ -9,6 +9,6 @@ jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
-    - uses: ArloL/actions/.github/actions/hello@v2407.0.101
+    - uses: ArloL/actions/.github/actions/hello@v2408.0.102
       with:
         name: ${{ inputs.name }}
